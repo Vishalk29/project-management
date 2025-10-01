@@ -32,11 +32,11 @@ const userSchema = new Schema(
       type: String,
     },
 
-    // Whether the user's email has been verified
-    isEmailVerified: {
-      type: Boolean,
-      default: false,
-    },
+    // // Whether the user's email has been verified
+    // isEmailVerified: {
+    //   type: Boolean,
+    //   default: false,
+    // },
 
     // Track the last login date
     lastLogin: {
