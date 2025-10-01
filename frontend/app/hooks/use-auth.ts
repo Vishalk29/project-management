@@ -14,3 +14,12 @@ export const userSignUpMutation = () => {
     // sends a POST request to /auth/register with form data
   });
 };
+
+export const userLoginMutation = () => {
+  return useMutation({
+    // mutationFn is the function that performs the mutation (API call)
+    mutationFn: (data: { email: string; password: string }) =>
+      postData("/auth/login", data),
+    // sends a POST request to /auth/login with form data
+  });
+};

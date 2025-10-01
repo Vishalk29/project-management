@@ -1,42 +1,99 @@
 // ✅ Context for storing user authentication state
-
 import type { User } from "@/types";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { queryClient } from "./react-query-provider";
+import { useLocation, useNavigate } from "react-router";
+import { PUBLIC_ROUTES, publicRoutes } from "@/lib/routes";
 
-// Define shape of AuthContext data
+// -----------------------------------------------
+// 🔑 1. Define AuthContext shape (what data/functions are available)
+// -----------------------------------------------
 interface AuthContextType {
   user: User | null; // currently logged-in user
   isAuthenticated: boolean; // whether user is logged in
-  isLoading: boolean; // track loading state (e.g., while logging in)
-  login: (email: string, password: string) => void; // login function
+  isLoading: boolean; // track loading state (e.g., while checking token)
+  login: (data: any) => void; // login function
   logout: () => void; // logout function
 }
 
-// ✅ Create AuthContext (with undefined default so we can validate later)
+// Create AuthContext with "undefined" so we can validate useAuth()
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
-// ✅ Provider component wraps around App (makes auth available everywhere)
+// -----------------------------------------------
+// 🔑 2. Provider Component (wraps around <App />)
+// -----------------------------------------------
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  // State for user object
-  const [user, setUser] = useState<User | null>(null);
-  // State for whether the user is logged in
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
-  // State for tracking loading (API calls etc.)
-  const [isLoading, setIsLoading] = useState(false);
+  // --- Local State ---
+  const [user, setUser] = useState<User | null>(null); // store user object
+  const [isAuthenticated, setIsAuthenticated] = useState(false); // track auth
+  const [isLoading, setIsLoading] = useState(false); // track async checks
 
-  // Fake login function (TODO: integrate API call)
-  const login = (email: string, password: string) => {
-    console.log(email, password);
-    // setIsLoading(true) → call API → setUser + setIsAuthenticated(true) → setIsLoading(false)
+  const navigate = useNavigate();
+  const currentPath = useLocation().pathname;
+  const isPublicRoute = publicRoutes.includes(currentPath);
+
+  // -----------------------------------------------
+  // 🔑 3. On mount → Check if user already logged in
+  // -----------------------------------------------
+  useEffect(() => {
+    const checkAuth = async () => {
+      setIsLoading(true);
+      const userInfo = localStorage.getItem("user");
+
+      if (userInfo) {
+        // User exists → update state
+        setUser(JSON.parse(userInfo));
+        setIsAuthenticated(true);
+      } else {
+        // No user → redirect if trying to access private route
+        setIsAuthenticated(false);
+        if (!isPublicRoute) {
+          navigate("/sign-in");
+        }
+      }
+      setIsLoading(false);
+    };
+
+    checkAuth();
+  }, []);
+
+  // -----------------------------------------------
+  // 🔑 4. Handle "force logout" (example: token expired event)
+  // -----------------------------------------------
+  useEffect(() => {
+    const handleLogout = () => {
+      logout();
+      navigate("sign-in");
+    };
+    window.addEventListener("force-logout", handleLogout);
+    return () => window.removeEventListener("force-logout", handleLogout);
+  }, []);
+
+  // -----------------------------------------------
+  // 🔑 5. Login Function
+  //  - Save token + user to localStorage
+  //  - Update React state
+  // -----------------------------------------------
+  const login = async (data: any) => {
+    localStorage.setItem("token", data.token);
+    localStorage.setItem("user", JSON.stringify(data.user));
+    setUser(data.user);
+    setIsAuthenticated(true);
   };
 
-  // Fake logout function (TODO: clear token, reset state)
+  // -----------------------------------------------
+  // 🔑 6. Logout Function
+  //  - Clear localStorage + reset state
+  // -----------------------------------------------
   const logout = () => {
-    console.log("logout");
-    // setUser(null); setIsAuthenticated(false)
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    setUser(null);
+    setIsAuthenticated(false);
+    queryClient.clear(); // clear cached queries
   };
 
-  // Values available to components via useAuth()
+  // Provide all values to children
   const value = {
     user,
     isAuthenticated,
@@ -45,15 +102,16 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     logout,
   };
 
-  // Provide context to children
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
 
-// ✅ Hook for accessing AuthContext
+// -----------------------------------------------
+// 🔑 7. Hook for consuming AuthContext safely
+// -----------------------------------------------
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider"); // safety check
+    throw new Error("useAuth must be used within an AuthProvider");
   }
   return context;
 };

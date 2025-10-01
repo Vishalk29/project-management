@@ -28,12 +28,16 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router";
-import { ROUTES } from "@/lib/routes";
+import { Link, useNavigate } from "react-router";
+import { PUBLIC_ROUTES } from "@/lib/routes";
+import { userLoginMutation } from "@/hooks/use-auth";
+import { toast } from "sonner";
 
 type SigninFormData = z.infer<typeof signInSchema>;
 
 const SignIn = () => {
+  const navigate = useNavigate();
+  const { mutate, isPending } = userLoginMutation();
   const form = useForm<SigninFormData>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
@@ -43,7 +47,18 @@ const SignIn = () => {
   });
 
   const handleOnSubmit = (values: SigninFormData) => {
-    console.log(values);
+    mutate(values, {
+      onSuccess: (data) => {
+        console.log(data);
+        toast.success("Login succesful");
+        navigate("/dashboard");
+      },
+      onError: (error: any) => {
+        const errorMessage =
+          error.response?.data?.message || "An error occured";
+        toast.error(errorMessage);
+      },
+    });
   };
   return (
     <div className="min-h-screen flex flex-col items-center justify-center  p-4">
@@ -85,7 +100,7 @@ const SignIn = () => {
                     <div className="flex items-center justify-between">
                       <FormLabel>Password</FormLabel>
                       <Link
-                        to={ROUTES.FORGOT_PASSWORD}
+                        to={PUBLIC_ROUTES.FORGOT_PASSWORD}
                         className="text-sm text-blue-600"
                       >
                         {FORGOT_PASSWORD}
@@ -112,7 +127,7 @@ const SignIn = () => {
               <p className="text-sm text-muted-foreground">
                 Don&apos;t have an account?{" "}
                 <Link
-                  to={ROUTES.SIGN_UP}
+                  to={PUBLIC_ROUTES.SIGN_UP}
                   className="text-blue-700 hover:underline"
                 >
                   {SIGN_UP}

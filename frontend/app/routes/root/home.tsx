@@ -2,7 +2,7 @@ import React from "react";
 import type { Route } from "../../+types/root";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router";
-import { ROUTES } from "@/lib/routes";
+import { PUBLIC_ROUTES } from "@/lib/routes";
 import { SIGN_IN, SIGN_UP, WELCOME_NOTE } from "@/lib/constants";
 
 export function meta({}: Route.MetaArgs) {
@@ -22,12 +22,12 @@ const HomePage = () => {
 
       {/* Buttons side by side */}
       <div className="flex gap-4">
-        <Link to={ROUTES.SIGN_IN}>
+        <Link to={PUBLIC_ROUTES.SIGN_IN}>
           <Button className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md">
             {SIGN_IN}
           </Button>
         </Link>
-        <Link to={ROUTES.SIGN_UP}>
+        <Link to={PUBLIC_ROUTES.SIGN_UP}>
           <Button
             variant="outline"
             className="border-2 border-blue-500 text-blue-600 hover:bg-blue-50 px-6 py-2 rounded-lg shadow-md"
