@@ -4,6 +4,7 @@ import { createContext, useContext, useEffect, useState } from "react";
 import { queryClient } from "./react-query-provider";
 import { useLocation, useNavigate } from "react-router";
 import { PUBLIC_ROUTES, publicRoutes } from "@/lib/routes";
+import { toast } from "sonner";
 
 // -----------------------------------------------
 // 🔑 1. Define AuthContext shape (what data/functions are available)
@@ -63,7 +64,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   useEffect(() => {
     const handleLogout = () => {
       logout();
-      navigate("sign-in");
+      navigate("/sign-in");
     };
     window.addEventListener("force-logout", handleLogout);
     return () => window.removeEventListener("force-logout", handleLogout);
@@ -91,6 +92,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     setUser(null);
     setIsAuthenticated(false);
     queryClient.clear(); // clear cached queries
+    toast.success("Login out successfully");
+    navigate("/sign-in");
   };
 
   // Provide all values to children

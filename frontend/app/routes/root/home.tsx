@@ -5,13 +5,6 @@ import { Link } from "react-router";
 import { PUBLIC_ROUTES } from "@/lib/routes";
 import { SIGN_IN, SIGN_UP, WELCOME_NOTE } from "@/lib/constants";
 
-export function meta({}: Route.MetaArgs) {
-  return [
-    { title: "Project Management" },
-    { name: "description", content: "Welcome to Project Management!" },
-  ];
-}
-
 const HomePage = () => {
   return (
     <div className="w-full h-screen flex flex-col justify-center items-center bg-gradient-to-br from-blue-50 to-purple-50 ">
