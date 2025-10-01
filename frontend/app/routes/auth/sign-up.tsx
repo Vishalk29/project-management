@@ -16,6 +16,7 @@ import {
   CREATE_ACCOUNT_DESCRIPTION,
   SIGN_IN,
   SIGN_UP,
+  SIGNING_UP,
 } from "@/lib/constants";
 import {
   Form,
@@ -29,8 +30,10 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router";
 import { ROUTES } from "@/lib/routes";
+import { userSignUpMutation } from "@/hooks/use-auth";
+import { toast } from "sonner";
 
-type SigninUpFormData = z.infer<typeof signUpSchema>;
+export type SigninUpFormData = z.infer<typeof signUpSchema>;
 
 const SignUp = () => {
   const form = useForm<SigninUpFormData>({
@@ -43,8 +46,19 @@ const SignUp = () => {
     },
   });
 
+  const { mutate, isPending } = userSignUpMutation();
+
   const handleOnSubmit = (values: SigninUpFormData) => {
-    console.log(values);
+    mutate(values, {
+      onSuccess: () => {
+        toast.success("Account created successfully");
+      },
+      onError: (error: any) => {
+        const errorMessage =
+          error.response?.data?.message || "An error occured";
+        toast.error(errorMessage);
+      },
+    });
   };
   return (
     <div className="min-h-screen flex flex-col items-center justify-center  p-4">
@@ -129,8 +143,8 @@ const SignUp = () => {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full ">
-                {SIGN_UP}
+              <Button type="submit" className="w-full " disabled={isPending}>
+                {isPending ? SIGNING_UP : SIGN_UP}
               </Button>
             </form>
           </Form>
