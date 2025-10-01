@@ -22,8 +22,7 @@ const registerUser = async (request, response) => {
     }); // save new user to DB
 
     response.status(201).json({
-      message:
-        "Verification email sent to your email , Please check and verify the account",
+      message: "User is created successfully",
     }); // success response
 
     // TODO: SEND EMAIL (verification link)
