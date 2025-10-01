@@ -12,6 +12,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import {
+  FORGOT_PASSWORD,
   SIGN_IN,
   SIGN_UP,
   WELCOME_BACK,
@@ -81,7 +82,15 @@ const SignIn = () => {
                 control={form.control}
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <div className="flex items-center justify-between">
+                      <FormLabel>Password</FormLabel>
+                      <Link
+                        to={ROUTES.FORGOT_PASSWORD}
+                        className="text-sm text-blue-600"
+                      >
+                        {FORGOT_PASSWORD}
+                      </Link>
+                    </div>
                     <FormControl>
                       <Input
                         type="password"
@@ -98,8 +107,8 @@ const SignIn = () => {
               </Button>
             </form>
           </Form>
-          <CardFooter>
-            <div className="flex items-center justify-center mt-4">
+          <CardFooter className="flex justify-center items-center mt-5">
+            <div className="flex items-center justify-center ">
               <p className="text-sm text-muted-foreground">
                 Don&apos;t have an account?{" "}
                 <Link
