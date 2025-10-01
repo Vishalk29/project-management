@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import express from "express";
 import mongoose from "mongoose";
 import morgan from "morgan";
-
+import routes from "./routes/index.js";
 dotenv.config(); // Load environment variables from .env file
 
 const app = express();
@@ -45,6 +45,9 @@ app.get("/", (req, res) => {
     message: "Welcome to Project management API",
   });
 });
+
+// http:localhost:5001/api-v1
+app.use("/api-v1", routes);
 
 //
 // ----------- Not Found Middleware -----------
