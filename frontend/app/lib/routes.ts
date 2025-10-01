@@ -3,6 +3,8 @@ export const PUBLIC_ROUTES = {
   SIGN_IN: "/sign-in",
   FORGOT_PASSWORD: "/forgot-password",
   RESET_PASSWORD: "/reset-password",
+  DASHBOARD: "/dashboard",
+  LANDING_PAGE: "/",
 };
 
 export const publicRoutes = [

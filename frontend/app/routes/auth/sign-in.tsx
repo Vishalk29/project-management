@@ -1,5 +1,5 @@
 import { signInSchema } from "@/lib/schemas";
-import React from "react";
+import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import type z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -32,12 +32,17 @@ import { Link, useNavigate } from "react-router";
 import { PUBLIC_ROUTES } from "@/lib/routes";
 import { userLoginMutation } from "@/hooks/use-auth";
 import { toast } from "sonner";
+import { useAuth } from "@/provider/auth-context";
+import { Loader2 } from "lucide-react"; // ✅ spinner icon
 
 type SigninFormData = z.infer<typeof signInSchema>;
 
 const SignIn = () => {
+  const { login } = useAuth();
   const navigate = useNavigate();
   const { mutate, isPending } = userLoginMutation();
+  const [showLoader, setShowLoader] = useState(false); // ✅ new state for loader
+
   const form = useForm<SigninFormData>({
     resolver: zodResolver(signInSchema),
     defaultValues: {
@@ -49,17 +54,30 @@ const SignIn = () => {
   const handleOnSubmit = (values: SigninFormData) => {
     mutate(values, {
       onSuccess: (data) => {
-        console.log(data);
-        toast.success("Login succesful");
-        navigate("/dashboard");
+        toast.success("Login successful");
+        login(data);
+        setShowLoader(true); // ✅ hide form, show loader
+        navigate(PUBLIC_ROUTES.DASHBOARD);
       },
       onError: (error: any) => {
         const errorMessage =
-          error.response?.data?.message || "An error occured";
+          error.response?.data?.message || "An error occurred";
         toast.error(errorMessage);
       },
     });
   };
+
+  // ✅ Loader Screen
+  if (showLoader) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center">
+        <Loader2 className="h-12 w-12 animate-spin text-blue-600" />
+        <p className="mt-4 text-lg font-medium">Signing in...</p>
+      </div>
+    );
+  }
+
+  // ✅ Default Form Screen
   return (
     <div className="min-h-screen flex flex-col items-center justify-center  p-4">
       <Card className="max-w-md w-full shadow-xl">
@@ -117,8 +135,19 @@ const SignIn = () => {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full ">
-                {SIGN_IN}
+              <Button
+                type="submit"
+                className="w-full flex items-center justify-center"
+                disabled={isPending}
+              >
+                {isPending ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Signing in...
+                  </>
+                ) : (
+                  SIGN_IN
+                )}
               </Button>
             </form>
           </Form>

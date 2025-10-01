@@ -59,7 +59,7 @@ const SignUp = () => {
         setShowLoader(true); // hide form, show loader
         setTimeout(() => {
           form.reset();
-          navigate(PUBLIC_ROUTES.SIGN_IN);
+          navigate(PUBLIC_ROUTES.DASHBOARD);
         }, 5000); // wait 5 sec then redirect
       },
       onError: (error: any) => {

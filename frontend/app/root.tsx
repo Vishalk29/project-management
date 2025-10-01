@@ -11,6 +11,12 @@ import type { Route } from "./+types/root";
 import "./app.css";
 import ReactQueryProvider from "./provider/react-query-provider";
 
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Project Management" },
+    { name: "description", content: "Welcome to Project Management!" },
+  ];
+}
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
