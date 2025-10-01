@@ -3,7 +3,7 @@ import type { Route } from "../../+types/root";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router";
 import { ROUTES } from "@/lib/routes";
-import { SIGN_IN, SIGN_UP } from "@/lib/constants";
+import { SIGN_IN, SIGN_UP, WELCOME_NOTE } from "@/lib/constants";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -14,10 +14,10 @@ export function meta({}: Route.MetaArgs) {
 
 const HomePage = () => {
   return (
-    <div className="w-full h-screen flex flex-col justify-center items-center bg-gradient-to-br from-blue-50 to-purple-50">
+    <div className="w-full h-screen flex flex-col justify-center items-center bg-gradient-to-br from-blue-50 to-purple-50 ">
       {/* Gradient Heading */}
-      <h2 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent text-center mb-6">
-        Welcome to Project Management Platform
+      <h2 className="text-4xl md:text-5xl font-thin bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent text-center mb-12">
+        {WELCOME_NOTE}
       </h2>
 
       {/* Buttons side by side */}
