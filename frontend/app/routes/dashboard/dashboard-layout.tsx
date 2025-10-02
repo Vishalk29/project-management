@@ -1,6 +1,7 @@
 import Header from "@/components/layout/header";
 import { SidebarComponent } from "@/components/layout/sidebar-component";
 import Loader from "@/components/loader";
+import { CreateWorkspace } from "@/components/workspace/create-workpace";
 
 import { PUBLIC_ROUTES } from "@/lib/routes";
 import { useAuth } from "@/provider/auth-context";
@@ -42,6 +43,10 @@ const DashBoardLayout = () => {
           </div>
         </main>
       </div>
+      <CreateWorkspace
+        isCreatingWorkspace={isCreatingWorkspace}
+        setIsCreatingWorkspace={setIsCreatingWorkspace}
+      />
     </div>
   );
 };
