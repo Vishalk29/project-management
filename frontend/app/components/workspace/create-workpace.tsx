@@ -24,6 +24,7 @@ import { Textarea } from "../ui/textarea";
 import { toast } from "sonner";
 import { useNavigate } from "react-router";
 import { workspaceSchema } from "@/lib/schemas";
+import { useCreateWorkspace } from "@/hooks/use-workspace";
 
 interface CreateWorkspaceProps {
   isCreatingWorkspace: boolean; // Controls modal open/close
@@ -65,15 +66,27 @@ export const CreateWorkspace = ({
 
   const navigate = useNavigate();
   // const { mutate, isPending } = useCreateWorkspace(); // Hook for API call (currently commented out)
-  const isPending = false;
 
+  const { mutate, isPending } = useCreateWorkspace();
   // ---------------------------------------------
   // 🚀 Submit handler
   // - Will call backend API (placeholder for now)
   // ---------------------------------------------
+
   const onSubmit = (data: WorkspaceForm) => {
-    console.log(data);
-    // mutate(data, { onSuccess: () => { toast.success("Workspace created!") }})
+    mutate(data, {
+      onSuccess: (data: any) => {
+        form.reset();
+        setIsCreatingWorkspace(false);
+        toast.success("Workspace created successfully");
+        navigate(`/workspaces/${data._id}`);
+      },
+      onError: (error: any) => {
+        const errorMessage = error.response.data.message;
+        toast.error(errorMessage);
+        console.log(error);
+      },
+    });
   };
 
   return (
