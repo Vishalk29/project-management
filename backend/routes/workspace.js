@@ -1,6 +1,8 @@
 import express from "express";
 import {
   createWorkspace,
+  getWorkspaceDetails,
+  getWorkspaceProjects,
   getWorkspaces,
 } from "../controllers/workspace-controller.js";
 import { workspaceSchema } from "../libs/validation-schema.js";
@@ -17,4 +19,6 @@ router.post(
 );
 
 router.get("/", authMiddleware, getWorkspaces);
+router.get("/:workspaceId", authMiddleware, getWorkspaceDetails);
+router.get("/:workspaceId/projects", authMiddleware, getWorkspaceProjects);
 export default router;

@@ -3,7 +3,7 @@ import express from "express";
 // Import routes related to authentication (e.g., login, register, logout)
 import authRoutes from "./auth.js";
 import workspaceRoutes from "./workspace.js";
-
+import projectRoutes from "./project.js";
 // Create a new router instance from Express
 const router = express.Router();
 
@@ -11,6 +11,7 @@ const router = express.Router();
 // Example: "/auth/login", "/auth/register"
 router.use("/auth", authRoutes);
 router.use("/workspaces", workspaceRoutes);
+router.use("/projects", projectRoutes);
 
 // Export router so it can be used in main app.js/server.js
 export default router;
