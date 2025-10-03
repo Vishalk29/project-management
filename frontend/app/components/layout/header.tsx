@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Link } from "react-router";
+import { Link, useLoaderData } from "react-router";
 import WorkspaceAvatar from "../workspace/workspace-avatar";
 
 // ---------------------------------------------
@@ -31,7 +31,8 @@ const Header = ({
   onCreateWorkspace,
 }: HeaderProps) => {
   const { user, logout } = useAuth(); // get logged-in user + logout method
-  const workspace: any = []; // placeholder: list of workspaces (TODO: fetch from API)
+  const { workspaces } = useLoaderData() as { workspaces: Workspace[] };
+  console.log(workspaces)
 
   return (
     // 🔒 Sticky header always visible, with border
@@ -69,7 +70,7 @@ const Header = ({
 
             {/* List of workspaces (click → select) */}
             <DropdownMenuGroup>
-              {workspace.map((ws: any) => (
+              {workspaces.map((ws) => (
                 <DropdownMenuItem
                   key={ws.id}
                   onClick={() => onWorkspaceSelected(ws)}
