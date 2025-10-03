@@ -13,7 +13,7 @@ import {
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import { Link, useLoaderData } from "react-router";
+import { Link, useLoaderData, useLocation, useNavigate } from "react-router";
 import WorkspaceAvatar from "../workspace/workspace-avatar";
 
 // ---------------------------------------------
@@ -30,9 +30,23 @@ const Header = ({
   selectedWorkspace,
   onCreateWorkspace,
 }: HeaderProps) => {
+  const navigate = useNavigate();
   const { user, logout } = useAuth(); // get logged-in user + logout method
   const { workspaces } = useLoaderData() as { workspaces: Workspace[] };
-  console.log(workspaces)
+  const isOnWorkspacePage = useLocation().pathname.includes("/workspace");
+  const handleOnClick = (workspace: Workspace) => {
+    onWorkspaceSelected(workspace);
+    const location = window.location;
+
+    if (isOnWorkspacePage) {
+      navigate(`/workspaces/${workspace._id}`);
+    } else {
+      const basePath = location.pathname;
+
+      navigate(`${basePath}?workspaceId=${workspace._id}`);
+    }
+  };
+  console.log(workspaces);
 
   return (
     // 🔒 Sticky header always visible, with border
@@ -72,8 +86,8 @@ const Header = ({
             <DropdownMenuGroup>
               {workspaces.map((ws) => (
                 <DropdownMenuItem
-                  key={ws.id}
-                  onClick={() => onWorkspaceSelected(ws)}
+                  key={ws._id}
+                  onClick={() => handleOnClick(ws)}
                 >
                   {ws.color && (
                     <WorkspaceAvatar color={ws.color} name={ws.name} />
