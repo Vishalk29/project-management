@@ -90,3 +90,8 @@ export interface MemberProps {
   role: "admin" | "member" | "owner" | "viewer";
   joinedAt: Date;
 }
+export enum ProjectMemberRole {
+  MANAGER = "manager",
+  CONTRIBUTOR = "contributor",
+  VIEWER = "viewer",
+}
