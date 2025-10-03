@@ -1,5 +1,6 @@
 import Workspace from "../models/workspace.js";
 import Project from "../models/project.js";
+import jwt from "jsonwebtoken";
 const createWorkspace = async (req, res) => {
   try {
     const { name, description, color } = req.body;
@@ -302,10 +303,86 @@ const getWorkspaceStats = async (req, res) => {
     });
   }
 };
+// Accept invite via token (already exists, keeping)
+
+const acceptInviteByToken = async (req, res) => {
+  try {
+    const { token } = req.body; // <-- use body instead of query
+    if (!token) return res.status(400).json({ message: "Token is required" });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const { workspaceId, role } = decoded;
+
+    const workspace = await Workspace.findById(workspaceId);
+    if (!workspace)
+      return res.status(404).json({ message: "Workspace not found" });
+
+    const isAlreadyMember = workspace.members.some(
+      (member) => member.user.toString() === req.user._id.toString()
+    );
+    if (isAlreadyMember) {
+      return res
+        .status(400)
+        .json({ message: "You are already a member of this workspace" });
+    }
+
+    workspace.members.push({ user: req.user._id, role: role || "member" });
+    await workspace.save();
+
+    return res
+      .status(200)
+      .json({ message: "Joined workspace successfully", workspace });
+  } catch (error) {
+    console.log(error);
+    return res.status(500).json({ message: "Invalid or expired invite token" });
+  }
+};
+
+// ✅ New: Generate invite link without email
+const generateWorkspaceInviteLink = async (req, res) => {
+  try {
+    const { workspaceId } = req.params;
+    const { role } = req.body || {};
+
+    const workspace = await Workspace.findById(workspaceId);
+    if (!workspace)
+      return res.status(404).json({ message: "Workspace not found" });
+
+    const userMemberInfo = workspace.members.find(
+      (member) => member.user.toString() === req.user._id.toString()
+    );
+
+    if (!userMemberInfo || !["admin", "owner"].includes(userMemberInfo.role)) {
+      return res.status(403).json({
+        message:
+          "You are not authorized to generate invites for this workspace",
+      });
+    }
+
+    const inviteToken = jwt.sign(
+      {
+        workspaceId,
+        role: role || "member",
+      },
+      process.env.JWT_SECRET,
+      { expiresIn: "7d" }
+    );
+
+    const invitationLink = `${process.env.FRONTEND_URL}/workspace-invite/${workspaceId}?tk=${inviteToken}`;
+
+    res.status(200).json({ invitationLink });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+};
+
 export {
   createWorkspace,
   getWorkspaces,
   getWorkspaceDetails,
   getWorkspaceProjects,
-  getWorkspaceStats
+  getWorkspaceStats,
+  acceptInviteByToken,
+  generateWorkspaceInviteLink,
 };

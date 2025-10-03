@@ -1,6 +1,8 @@
 import express from "express";
 import {
+  acceptInviteByToken,
   createWorkspace,
+  generateWorkspaceInviteLink,
   getWorkspaceDetails,
   getWorkspaceProjects,
   getWorkspaces,
@@ -19,6 +21,15 @@ router.post(
   createWorkspace
 );
 
+// Accept invite
+router.post("/accept-invite", authMiddleware, acceptInviteByToken);
+
+// Generate invite link
+router.post(
+  "/:workspaceId/generate-invite-link",
+  authMiddleware,
+  generateWorkspaceInviteLink
+);
 router.get("/", authMiddleware, getWorkspaces);
 router.get("/:workspaceId", authMiddleware, getWorkspaceDetails);
 router.get("/:workspaceId/projects", authMiddleware, getWorkspaceProjects);
