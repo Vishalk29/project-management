@@ -23,20 +23,33 @@ const Dashboard = () => {
   const [searchParams] = useSearchParams();
   const workspaceId = searchParams.get("workspaceId");
 
+  // If no workspace selected, don't run the query
   const { data, isPending } = useGetWorkspaceStatsQuery(workspaceId!) as {
-    data: {
-      stats: StatsCardProps;
-      taskTrendsData: TaskTrendsData[];
-      projectStatusData: ProjectStatusData[];
-      taskPriorityData: TaskPriorityData[];
-      workspaceProductivityData: WorkspaceProductivityData[];
-      upcomingTasks: Task[];
-      recentProjects: Project[];
-    };
+    data:
+      | {
+          stats: StatsCardProps;
+          taskTrendsData: TaskTrendsData[];
+          projectStatusData: ProjectStatusData[];
+          taskPriorityData: TaskPriorityData[];
+          workspaceProductivityData: WorkspaceProductivityData[];
+          upcomingTasks: Task[];
+          recentProjects: Project[];
+        }
+      | undefined;
     isPending: boolean;
   };
 
-  if (isPending) {
+  // No workspace selected
+  if (!workspaceId) {
+    return (
+      <div className="flex items-center justify-center h-full text-gray-500">
+        Please select a workspace to view the dashboard.
+      </div>
+    );
+  }
+
+  // Query is loading
+  if (isPending || !data) {
     return (
       <div className="flex items-center justify-center h-full">
         <Loader />
