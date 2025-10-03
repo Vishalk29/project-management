@@ -8,6 +8,7 @@ export interface User {
 }
 
 export interface Workspace {
+  id: Key | null | undefined;
   _id: string;
   name: string;
   description?: string;

@@ -2,12 +2,30 @@ import Header from "@/components/layout/header";
 import { SidebarComponent } from "@/components/layout/sidebar-component";
 import Loader from "@/components/loader";
 import { CreateWorkspace } from "@/components/workspace/create-workpace";
+import { getData } from "@/lib/fetch-utils";
 
 import { PUBLIC_ROUTES } from "@/lib/routes";
 import { useAuth } from "@/provider/auth-context";
 import type { Workspace } from "@/types";
 import React, { useState } from "react";
 import { Navigate, Outlet } from "react-router";
+
+// ---------------------------------------------
+// 🔹 clientLoader
+// - Runs automatically when the route is visited
+// - Fetches data **before** rendering the component
+// - Data returned here can be consumed via useLoaderData()
+// - Here: we fetch `workspaces` for the logged-in user
+// ---------------------------------------------
+
+export const clientLoader = async () => {
+  try {
+    const [workspaces] = await Promise.all([getData("/workspaces")]);
+    return { workspaces };
+  } catch (error) {
+    console.log(error);
+  }
+};
 
 const DashBoardLayout = () => {
   const { isAuthenticated, isLoading } = useAuth();
